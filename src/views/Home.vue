@@ -1,29 +1,72 @@
 <template>
   <v-container>
-    <h1>
-      <u>General Hotel Info</u>
-    </h1>
-    <v-expansion-panels>
-      <v-expansion-panel>
-        <v-expansion-panel-header>{{ header }}</v-expansion-panel-header>
-        <v-expansion-panel-content>{{ content }}</v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-    <h1 v-for="item in items" :key="item.message">{{ item.message }}</h1>
-    <v-btn @click="sort()"></v-btn>
+    <v-text-field
+      type="number"
+      rounded
+      solo
+      outlined
+      placeholder="Enter base rate"
+      prepend-inner-icon="mdi-currency-usd"
+      clearable
+      v-model="baseRate"
+    ></v-text-field>
+    <v-row justify="space-between">
+      <v-card class="pa-4 ma-4" width="5cm">
+        Mountain King
+        <v-col>{{ baseRate }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Mountain Twin
+        <v-col>{{ baseRate }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Harbour King
+        <v-col>{{ resultHK_HD }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Harbor Twin
+        <v-col>{{ resultHK_HD }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Superior Mountain King
+        <v-col>{{ resultSMK_SMD }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Superior Mountain Twin
+        <v-col>{{ resultSMK_SMD }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Superior Harbour King
+        <v-col>{{ resultSHK_SHD }}</v-col>
+      </v-card>
+      <v-card class="pa-4 ma-4" width="5cm">
+        Superior Harbour Twin
+        <v-col>{{ resultSHK_SHD }}</v-col>
+      </v-card>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 export default {
   data: () => ({
-    items: [{ message: "Hello" }, { message: "lol" }, { message: "fuck" }]
+    baseRate: null,
+    resultSMK_SMD: null,
+    resultSHK_SHD: null,
+    resultHK_HD: null
   }),
-  methods: {
-    sort() {
-      items.sort((a, b) => (a.title > b.title ? 1 : -1));
+  watch: {
+    baseRate() {
+      if (this.baseRate > 0) {
+        this.resultHK_HD = Number(this.baseRate) + Number(20);
+        this.resultSHK_SHD = Number(this.baseRate) + Number(30);
+        this.resultSMK_SMD = Number(this.baseRate) + Number(45);
+      } else {
+        this.resultSMK_SMD = null;
+        this.resultSHK_SHD = null;
+        this.resultHK_HD = null;
+      }
     }
   }
 };
 </script>
-

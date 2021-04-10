@@ -3,8 +3,8 @@
     <v-app-bar flat elevate-on-scroll dense>
       <v-app-bar-title>Porter</v-app-bar-title>
       <v-spacer></v-spacer>
-      <v-btn :to="name='home'">Home</v-btn>
-      <v-btn :to="name='about'">About</v-btn>
+      <v-btn :to="name='/'">Home</v-btn>
+      <v-btn :to="name='/concierge'">Concierge</v-btn>
     </v-app-bar>
   </v-card>
 </template>
