@@ -1,14 +1,14 @@
 <template>
   <div>
-    <TourOptions />
+    <CalcRoomRates />
   </div>
 </template>
 
 <script>
-import TourOptions from "@/components/Tours";
+import CalcRoomRates from "@/components/CalcRoomRates";
 export default {
   components: {
-    TourOptions
+    CalcRoomRates
   }
 };
 </script>
