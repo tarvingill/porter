@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import RoomRates from '@/views/RoomRates'
+import RoomRates from '@/components/RoomRates'
 
 Vue.use(VueRouter)
 
