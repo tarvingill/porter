@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import RoomRates from '@/components/RoomRates'
+import CalcRoomRates from '@/components/CalcRoomRates'
 
 Vue.use(VueRouter)
 
 const routes = [
     {
         path: '/',
-        name: "RoomRates",
-        component: RoomRates
-    },
+        name: "roomRates",
+        component: CalcRoomRates
+    }
 ]
 
 const router = new VueRouter({

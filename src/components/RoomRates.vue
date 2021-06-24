@@ -21,21 +21,22 @@
         v-model="numberOfNights"
       ></v-text-field>
     </v-row>
-
-    <v-chip-group column>
-      <v-chip
-        label
+    <v-row>
+      <v-card
+        class="ma-2 pa-4"
         @click="selectOption(index)"
         v-for="(room, index) in rooms"
         :key="room.id"
         :color="room.color"
       >
         {{ room.name }}
-        {{ room.rate }}
-      </v-chip>
-    </v-chip-group>
+        <b>
+          {{ room.rate }}
+        </b>
+      </v-card>
+    </v-row>
 
-    <v-row justify="end">
+    <v-row class="ma-2" justify="end">
       <v-btn outlined @click="emptyCart()">Clear all</v-btn>
     </v-row>
     <v-row>
