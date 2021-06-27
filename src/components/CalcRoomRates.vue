@@ -7,8 +7,8 @@
         outlined
         placeholder="Enter base rate"
         v-model="baseRate"
+        hint="Press enter to add value"
       ></v-text-field>
-      <input type="text" />
 
       <v-row justify="end">
         <v-btn @click="removeAllRates()" outlined>Clear all</v-btn>
@@ -51,6 +51,8 @@
       <v-row justify="end" class="my-6">
         <v-btn @click="removeAllAddOns()" outlined>Clear Add Ons</v-btn>
       </v-row>
+      <h1 class="my-12">Selected add ons {{ addOnsCounter }}</h1>
+      <h1></h1>
       <v-chip-group show-arrows>
         <v-chip
           label
@@ -79,6 +81,7 @@ export default {
       valueArrayElements: null,
       nightNumber: 1,
       totalRate: null,
+      addOnsCounter: null,
       items: [],
       values: [],
       headers: [
@@ -133,6 +136,10 @@ export default {
     this.values = valuesArray;
     const itemsArray = JSON.parse(localStorage.getItem("items"));
     this.items = itemsArray;
+    const localAddOnsCounter = JSON.parse(
+      localStorage.getItem("addOnsCounter")
+    );
+    this.addOnsCounter = localAddOnsCounter;
     this.totalCount();
   },
   updated() {
@@ -172,19 +179,22 @@ export default {
       this.items = [];
       this.totalRate = null;
       this.nightNumber = 1;
+      this.addOnsCounter = null;
     },
     selectAddOns(index) {
       this.values.push({
         roomRate: this.rooms[index].rate,
         roomName: this.rooms[index].name,
       });
-      console.log(this.rooms);
+      this.addOnsCounter = this.values.length;
+      localStorage.setItem("addOnsCounter", JSON.stringify(this.addOnsCounter));
     },
     removeAddOn(index) {
       this.values.splice(index, 1);
     },
     removeAllAddOns() {
       this.values = [];
+      this.addOnsCounter = null;
     },
     sumOfRates(key) {
       let totalVal;
@@ -198,14 +208,5 @@ export default {
 <style scoped>
 * {
   font-size: medium;
-}
-.total-style {
-  background-color: red;
-}
-@media only screen and (max-width: 600px) {
-  .data-table {
-    min-width: 100%;
-    background-color: red;
-  }
 }
 </style>
