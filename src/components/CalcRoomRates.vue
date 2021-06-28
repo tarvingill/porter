@@ -27,6 +27,22 @@
         </v-chip>
       </v-chip-group>
 
+      <h1 class="my-12">Selected add ons {{ addOnsCounter }}</h1>
+      <v-chip-group class="my-2" show-arrows>
+        <v-chip
+          label
+          @click:close="removeAddOn()"
+          close
+          v-for="(value, index) in values"
+          :key="index"
+          color="red"
+        >
+          {{ newVal }}
+          {{ value.roomName }}
+          {{ value.roomRate }}
+        </v-chip>
+      </v-chip-group>
+
       <v-data-table
         class="data-table"
         hide-default-footer
@@ -51,22 +67,6 @@
       <v-row justify="end" class="my-6">
         <v-btn @click="removeAllAddOns()" outlined>Clear Add Ons</v-btn>
       </v-row>
-      <h1 class="my-12">Selected add ons {{ addOnsCounter }}</h1>
-      <h1></h1>
-      <v-chip-group show-arrows>
-        <v-chip
-          label
-          @click:close="removeAddOn()"
-          close
-          v-for="(value, index) in values"
-          :key="index"
-          color="red"
-        >
-          {{ valueArrayElements }}
-          {{ value.roomName }}
-          {{ value.roomRate }}
-        </v-chip>
-      </v-chip-group>
     </v-container>
   </div>
 </template>
@@ -78,6 +78,8 @@ export default {
       baseRate: null,
       grandTotal: null,
       editedIndex: -1,
+      limit: 5,
+      newVal: null,
       valueArrayElements: null,
       nightNumber: 1,
       totalRate: null,
@@ -95,7 +97,7 @@ export default {
       ],
       rooms: [
         {
-          name: "Rollaway ",
+          name: "Rollaway",
           rate: "35",
         },
         {
@@ -131,15 +133,15 @@ export default {
     };
   },
   //mounts data from previous session
-  mounted() {
-    const valuesArray = JSON.parse(localStorage.getItem("values"));
-    this.values = valuesArray;
-    const itemsArray = JSON.parse(localStorage.getItem("items"));
-    this.items = itemsArray;
-    const localAddOnsCounter = JSON.parse(
-      localStorage.getItem("addOnsCounter")
-    );
-    this.addOnsCounter = localAddOnsCounter;
+  created() {
+    // // const valuesArray = JSON.parse(localStorage.getItem("values"));
+    // // this.values = valuesArray;
+    // // const itemsArray = JSON.parse(localStorage.getItem("items"));
+    // // this.items = itemsArray;
+    // // const localAddOnsCounter = JSON.parse(
+    // //   localStorage.getItem("addOnsCounter")
+    // // );
+    // this.addOnsCounter = localAddOnsCounter;
     this.totalCount();
   },
   updated() {
@@ -158,7 +160,7 @@ export default {
     totalCount() {
       this.totalRate = this.values.reduce((acc, item) => {
         return Number(acc) + Number(item.roomRate);
-      }, null);
+      }, 0);
     },
     addRate() {
       if (this.baseRate > 0) {
@@ -175,7 +177,7 @@ export default {
       this.baseRate = null;
     },
     removeAllRates() {
-      this.values = [];
+      this.baseRate = this.values = [];
       this.items = [];
       this.totalRate = null;
       this.nightNumber = 1;
@@ -188,9 +190,18 @@ export default {
       });
       this.addOnsCounter = this.values.length;
       localStorage.setItem("addOnsCounter", JSON.stringify(this.addOnsCounter));
+      // console.log(this.values);
+      // let val;
+      // this.values.forEach((index) => {
+      //   this.values.find(
+      //     (element) => index.element.roomRate === this.rooms[0].rate
+      //   );
+      // });
+      // console.log();
     },
     removeAddOn(index) {
       this.values.splice(index, 1);
+      this.addOnsCounter--;
     },
     removeAllAddOns() {
       this.values = [];
@@ -198,7 +209,7 @@ export default {
     },
     sumOfRates(key) {
       let totalVal;
-      totalVal = this.items.reduce((a, b) => a + (b[key] || 0), null);
+      totalVal = this.items.reduce((a, b) => a + (b[key] || 0), 0);
       return totalVal + this.totalRate;
     },
   },
