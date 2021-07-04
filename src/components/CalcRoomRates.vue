@@ -1,5 +1,6 @@
 <template>
   <div class="pa-6">
+    <!-- Input for base rate -->
     <v-container>
       <v-text-field
         @keypress.enter="addRate()"
@@ -10,9 +11,12 @@
         hint="Press enter to add value"
       ></v-text-field>
 
+      <!-- Clear all button -->
       <v-row justify="end">
-        <v-btn @click="removeAllRates()" outlined>Clear all</v-btn>
+        <v-btn @click="removeAllValues()" outlined>Clear all</v-btn>
       </v-row>
+
+      <!-- Add on's selection array -->
       <v-chip-group class="my-6" show-arrows>
         <v-chip
           @click="selectAddOns(index)"
@@ -27,7 +31,8 @@
         </v-chip>
       </v-chip-group>
 
-      <h1 class="my-12">Selected add ons {{ addOnsCounter }}</h1>
+      <!-- Selected add ons array -->
+      <h1 class="my-12">Selected add ons</h1>
       <v-chip-group class="my-2" show-arrows>
         <v-chip
           label
@@ -37,18 +42,26 @@
           :key="index"
           color="red"
         >
-          {{ newVal }}
-          {{ value.roomName }}
-          {{ value.roomRate }}
+          <b>
+            {{ value.roomName }}
+            {{ value.roomRate }}
+          </b>
         </v-chip>
       </v-chip-group>
 
+      <!-- Remove all add-ons button -->
+      <v-row justify="end" class="my-6">
+        <v-btn @click="removeAllAddOns()" outlined>Clear Add Ons</v-btn>
+      </v-row>
+
+      <!-- Table of nights and room rates  -->
       <v-data-table
         class="data-table"
         hide-default-footer
         :items="items"
         :headers="headers"
       >
+        <!-- Total room rate for the arbitrary number of nights -->
         <template slot="body.append">
           <tr class="total-style">
             <th><h3>Total</h3></th>
@@ -57,16 +70,23 @@
             </th>
           </tr>
         </template>
-        <template v-slot:[`item.actions`]="{ night }">
-          <v-btn @click="deleteNight(night)" icon>
+
+        <!-- Total room rates divided by number of nights (average) -->
+        <template v-if="nightNumber > 1" slot="body.append">
+          <tr class="average-style">
+            <th><h3>Average</h3></th>
+            <th v-for="average in averages" :key="average.name">
+              <h2>{{ averageOfRates(average.name) }}</h2>
+            </th>
+          </tr>
+        </template>
+        <!-- Delete button for each night in array -->
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-btn @click="removeRate(item)" icon>
             <v-icon small> mdi-delete </v-icon>
           </v-btn>
         </template>
       </v-data-table>
-
-      <v-row justify="end" class="my-6">
-        <v-btn @click="removeAllAddOns()" outlined>Clear Add Ons</v-btn>
-      </v-row>
     </v-container>
   </div>
 </template>
@@ -76,14 +96,9 @@ export default {
   data() {
     return {
       baseRate: null,
-      grandTotal: null,
-      editedIndex: -1,
-      limit: 5,
-      newVal: null,
-      valueArrayElements: null,
       nightNumber: 1,
+      editedIndex: -1,
       totalRate: null,
-      addOnsCounter: null,
       items: [],
       values: [],
       headers: [
@@ -101,16 +116,12 @@ export default {
           rate: "35",
         },
         {
-          name: "Breakfast Included ",
+          name: "Breakfast Included",
           rate: "26",
         },
         {
-          name: "Valet ",
+          name: "Valet",
           rate: "20",
-        },
-        {
-          name: "Upgrade Fee",
-          rate: "35",
         },
       ],
       totals: [
@@ -130,42 +141,36 @@ export default {
           name: "esVal",
         },
       ],
+      averages: [
+        {
+          name: "mkVal",
+        },
+        {
+          name: "hkVal",
+        },
+        {
+          name: "smkVal",
+        },
+        {
+          name: "shkVal",
+        },
+        {
+          name: "esVal",
+        },
+      ],
     };
   },
-  //mounts data from previous session
   created() {
-    // // const valuesArray = JSON.parse(localStorage.getItem("values"));
-    // // this.values = valuesArray;
-    // // const itemsArray = JSON.parse(localStorage.getItem("items"));
-    // // this.items = itemsArray;
-    // // const localAddOnsCounter = JSON.parse(
-    // //   localStorage.getItem("addOnsCounter")
-    // // );
-    // this.addOnsCounter = localAddOnsCounter;
     this.totalCount();
   },
   updated() {
-    this.contentPersist();
     this.totalCount();
   },
   methods: {
-    deleteNight(night) {
-      this.editedIndex = this.items.indexOf(night);
-      this.items.splice(this.editedIndex, 1);
-    },
-    contentPersist() {
-      localStorage.setItem("values", JSON.stringify(this.values));
-      localStorage.setItem("items", JSON.stringify(this.items));
-    },
-    totalCount() {
-      this.totalRate = this.values.reduce((acc, item) => {
-        return Number(acc) + Number(item.roomRate);
-      }, 0);
-    },
     addRate() {
       if (this.baseRate > 0) {
         this.items.push({
-          name: `Night ${this.nightNumber}`,
+          name: "Night",
           mkVal: Number(this.baseRate),
           smkVal: this.baseRate > 0 ? Number(this.baseRate) + Number(20) : null,
           hkVal: this.baseRate > 0 ? Number(this.baseRate) + Number(35) : null,
@@ -173,32 +178,50 @@ export default {
           esVal: this.baseRate > 0 ? Number(this.baseRate) + Number(140) : null,
         });
       }
+      // this.items.forEach(element => {
+      //   if(element == null,) {
+      //     this.items.splice
+      //   }
+      // });
       this.nightNumber++;
       this.baseRate = null;
-    },
-    removeAllRates() {
-      this.baseRate = this.values = [];
-      this.items = [];
-      this.totalRate = null;
-      this.nightNumber = 1;
-      this.addOnsCounter = null;
     },
     selectAddOns(index) {
       this.values.push({
         roomRate: this.rooms[index].rate,
         roomName: this.rooms[index].name,
       });
-      this.addOnsCounter = this.values.length;
-      localStorage.setItem("addOnsCounter", JSON.stringify(this.addOnsCounter));
+      /** Test code */
+
       // console.log(this.values);
-      // let val;
-      // this.values.forEach((index) => {
-      //   this.values.find(
-      //     (element) => index.element.roomRate === this.rooms[0].rate
-      //   );
-      // });
-      // console.log();
+      // const newItem = [{ name: "Rollaway", name: "Valet" }];
+      // const duplicateIndex = this.values
+      //   .map((item) => item.roomName)
+      //   .indexOf(newItem[0].name);
     },
+    removeRate(item) {
+      this.editedIndex = this.items.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.items.splice(this.editedIndex, 1);
+      this.closeDelete();
+      this.nightNumber--;
+      console.log(this.items);
+    },
+    closeDelete() {
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+    removeAllValues() {
+      this.baseRate = null;
+      this.items = [];
+      this.values = [];
+      this.totalRate = null;
+      this.nightNumber = 1;
+      this.addOnsCounter = null;
+    },
+
     removeAddOn(index) {
       this.values.splice(index, 1);
       this.addOnsCounter--;
@@ -207,10 +230,24 @@ export default {
       this.values = [];
       this.addOnsCounter = null;
     },
+    totalCount() {
+      this.totalRate = this.values.reduce((acc, item) => {
+        return Number(acc) + Number(item.roomRate);
+      }, 0);
+    },
     sumOfRates(key) {
       let totalVal;
       totalVal = this.items.reduce((a, b) => a + (b[key] || 0), 0);
       return totalVal + this.totalRate;
+    },
+    averageOfRates(key) {
+      let sumVal;
+      let finalVal;
+      let averagedVal;
+      sumVal = this.items.reduce((a, b) => a + (b[key] || 0), 0);
+      finalVal = sumVal + this.totalRate;
+      averagedVal = finalVal / this.items.length;
+      return averagedVal.toPrecision(5);
     },
   },
 };
